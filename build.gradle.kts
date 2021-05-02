@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "me.machinemaker"
-version = "0.1.0"
+version = "0.1.1-SNAPSHOT"
 description = "A config library"
 
 repositories {
