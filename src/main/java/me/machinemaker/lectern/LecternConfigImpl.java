@@ -47,7 +47,7 @@ class LecternConfigImpl implements LecternConfig {
         DUMPER_OPTIONS.setDefaultFlowStyle(FlowStyle.BLOCK);
     }
 
-    public static final Yaml LECTERN_YAML = new Yaml(new LecternConstructor(), new LecternRepresenter(), DUMPER_OPTIONS);
+    static final Yaml LECTERN_YAML = new Yaml(new LecternConstructor(), new LecternRepresenter(), DUMPER_OPTIONS);
 
     private final RootSectionNodeImpl root;
     private final File file;
