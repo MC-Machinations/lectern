@@ -98,19 +98,33 @@ class SectionNodeImpl implements SectionNode {
                 return (T) children.get(path[0]);
             }
         } else {
-            return ((SectionNode) children.get(path[0])).get(Arrays.copyOfRange(path, 1, path.length));
+            if (!children.containsKey(path[0])) {
+                return null;
+            } else {
+                return ((SectionNode) children.get(path[0])).get(Arrays.copyOfRange(path, 1, path.length));
+            }
         }
     }
 
     @Override
     public <T> void set(@NotNull T value, @NotNull String...path) {
+        Node node = children.get(path[0]);
         if (path.length == 1) {
-            if (children.get(path[0]).isSection()) {
-                throw new RuntimeException("Path led to a SectionNode not a ValueNode");
+            if (node == null) {
+                addChild(path[0], value);
+            } else {
+                if (!(node instanceof ValueNode)) {
+                    throw new RuntimeException("Path led to a SectionNode not a ValueNode"); // TODO custom exception
+                } else {
+                    ((ValueNode<?>) children.get(path[0])).value(value);
+                }
             }
-            ((ValueNode<?>) children.get(path[0])).value(value);
         } else {
-            ((SectionNode) children.get(path[0])).get(Arrays.copyOfRange(path, 1, path.length));
+            if (node == null) {
+                addSection(path[0]).set(value, Arrays.copyOfRange(path, 1, path.length));
+            } else {
+                ((SectionNode) children.get(path[0])).set(value, Arrays.copyOfRange(path, 1, path.length));
+            }
         }
     }
 
