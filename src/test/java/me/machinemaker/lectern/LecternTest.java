@@ -72,6 +72,14 @@ public class LecternTest {
         assertEquals(List.of("hello", "there"), config.get("section1", "section1deep"));
     }
 
+    @Test
+    void readEmpty() {
+        config.save(); // TODO reformat this test class
+
+        LecternConfig config = Lectern.createConfig(getFile("empty-config.yml"));
+        config.reloadOrSave();
+    }
+
     static File getFile(String...path) {
         String[] fullPath = Stream.concat(List.of("test", "resources").stream(), Arrays.stream(path)).toArray(String[]::new);
         return Paths.get("src", fullPath).toFile();

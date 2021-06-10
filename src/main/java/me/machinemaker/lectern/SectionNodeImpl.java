@@ -129,21 +129,23 @@ class SectionNodeImpl implements SectionNode {
     }
 
     @SuppressWarnings("unchecked")
-    public void load(@NotNull Map<String, ?> map) {
-        map.forEach((s, o) -> {
-            if (!this.children.containsKey(s)) {
-                throw new RuntimeException(String.format("%s is not a recognized key, and was not loaded into the configuration", s));
-            }
-            if (o instanceof Map && this.children.get(s) instanceof SectionNode) {
-                ((SectionNodeImpl) this.children.get(s)).load((Map<String, ?>) o);
-            } else {
-                try {
-                    ((ValueNode<?>) this.children.get(s)).value(o);
-                } catch (ClassCastException e) {
-                    throw new RuntimeException(String.format("%s could not be set as the value for %s", o, s));
+    public void load(@Nullable Map<String, ?> map) {
+        if (map != null) {
+            map.forEach((s, o) -> {
+                if (!this.children.containsKey(s)) {
+                    throw new RuntimeException(String.format("%s is not a recognized key, and was not loaded into the configuration", s));
                 }
-            }
-        });
+                if (o instanceof Map && this.children.get(s) instanceof SectionNode) {
+                    ((SectionNodeImpl) this.children.get(s)).load((Map<String, ?>) o);
+                } else {
+                    try {
+                        ((ValueNode<?>) this.children.get(s)).value(o);
+                    } catch (ClassCastException e) {
+                        throw new RuntimeException(String.format("%s could not be set as the value for %s", o, s));
+                    }
+                }
+            });
+        }
     }
 
     @NotNull
