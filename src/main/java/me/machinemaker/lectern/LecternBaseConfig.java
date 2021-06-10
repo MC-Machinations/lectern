@@ -25,6 +25,7 @@ import me.machinemaker.lectern.annotations.Validate;
 import me.machinemaker.lectern.exceptions.ConfigNotInitializedException;
 import me.machinemaker.lectern.exceptions.RegexValidationException;
 import me.machinemaker.lectern.utils.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -50,6 +51,8 @@ public abstract class LecternBaseConfig {
 
     /**
      * Save the configuration file with update values.
+     *
+     * @throws ConfigNotInitializedException if the config has not been initialized
      */
     public void save() {
         if (this.config == null) {
@@ -62,6 +65,8 @@ public abstract class LecternBaseConfig {
 
     /**
      * Overwrites field values with current values in the configuration file.
+     *
+     * @throws ConfigNotInitializedException if the config has not been initialized
      */
     public void reload() {
         if (this.config == null) {
@@ -70,6 +75,21 @@ public abstract class LecternBaseConfig {
         config.reload();
         loadFields(this, getClass(), config.root());
         loadSubClasses(this, getClass(), config.root());
+    }
+
+    /**
+     * Returns the LecternConfig backing this class. Can only be called
+     * after initialization.
+     *
+     * @return the backing config
+     * @throws ConfigNotInitializedException if the config has not been initialized
+     */
+    @NotNull
+    public final LecternConfig getConfig() {
+        if (this.config == null) {
+            throw new ConfigNotInitializedException(getClass());
+        }
+        return config;
     }
 
     final void init(File parentDir) throws IOException {
