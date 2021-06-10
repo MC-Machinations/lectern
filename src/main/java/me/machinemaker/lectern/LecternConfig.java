@@ -21,11 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.io.Serializable;
 
 /**
  * Holds nodes and values for a configuration object.
  */
-public interface LecternConfig {
+public interface LecternConfig extends Serializable {
 
     /**
      * Gets the root configuration node for this config file.

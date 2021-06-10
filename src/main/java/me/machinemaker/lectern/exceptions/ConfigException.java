@@ -18,6 +18,8 @@
 package me.machinemaker.lectern.exceptions;
 
 import me.machinemaker.lectern.LecternConfig;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * For exceptions that contain a configuration.
@@ -28,7 +30,7 @@ public abstract class ConfigException extends RuntimeException {
 
     protected final LecternConfig config;
 
-    public ConfigException(String message, LecternConfig config, Throwable cause) {
+    protected ConfigException(String message, LecternConfig config, Throwable cause) {
         super(message, cause);
         this.config = config;
     }
@@ -38,11 +40,18 @@ public abstract class ConfigException extends RuntimeException {
         this.config = config;
     }
 
+    protected ConfigException(@NotNull String message) {
+        super(message);
+        this.config = null;
+    }
+
     /**
      * Get the configuration this exception pertains to.
+     * Nullable when the exception occurs before the config is created.
      *
      * @return the config
      */
+    @Nullable
     public LecternConfig getConfig() {
         return config;
     }

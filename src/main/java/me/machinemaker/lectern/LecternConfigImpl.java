@@ -37,6 +37,8 @@ import java.nio.charset.StandardCharsets;
 
 class LecternConfigImpl implements LecternConfig {
 
+    private static final long serialVersionUID = 1L;
+
     static int INDENT = 2;
     private static final DumperOptions DUMPER_OPTIONS = new DumperOptions();
 

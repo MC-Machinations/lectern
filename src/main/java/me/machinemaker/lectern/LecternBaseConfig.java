@@ -22,8 +22,10 @@ import me.machinemaker.lectern.annotations.Key;
 import me.machinemaker.lectern.annotations.LecternConfiguration;
 import me.machinemaker.lectern.annotations.LecternConfigurationSection;
 import me.machinemaker.lectern.annotations.Validate;
+import me.machinemaker.lectern.exceptions.ConfigNotInitializedException;
 import me.machinemaker.lectern.exceptions.RegexValidationException;
 import me.machinemaker.lectern.utils.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,12 +45,16 @@ public abstract class LecternBaseConfig {
 
     private static final Logger LOGGER = Logger.getGlobal();
 
+    @Nullable
     private LecternConfig config;
 
     /**
      * Save the configuration file with update values.
      */
     public void save() {
+        if (this.config == null) {
+            throw new ConfigNotInitializedException(getClass());
+        }
         readFields(this, getClass(), config.root());
         readSubClasses(this, getClass(), config.root());
         config.save();
@@ -58,6 +64,9 @@ public abstract class LecternBaseConfig {
      * Overwrites field values with current values in the configuration file.
      */
     public void reload() {
+        if (this.config == null) {
+            throw new ConfigNotInitializedException(getClass());
+        }
         config.reload();
         loadFields(this, getClass(), config.root());
         loadSubClasses(this, getClass(), config.root());
