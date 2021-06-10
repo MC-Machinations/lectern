@@ -19,6 +19,7 @@ package me.machinemaker.lectern.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -27,6 +28,7 @@ import java.lang.annotation.Target;
  * For use on types that extend {@link me.machinemaker.lectern.LecternBaseConfig}.
  * Defines a type that represents a configuration file.
  */
+@Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -37,12 +39,6 @@ public @interface LecternConfiguration {
      * @return the filename
      */
     String fileName() default "config.yml";
-
-    /**
-     * The parent path for the configuration
-     * @return the parent path
-     */
-    String rootPath() default "";
 
     /**
      * The header for the file.

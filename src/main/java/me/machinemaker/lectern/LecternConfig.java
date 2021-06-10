@@ -26,15 +26,7 @@ import java.io.Serializable;
 /**
  * Holds nodes and values for a configuration object.
  */
-public interface LecternConfig extends Serializable {
-
-    /**
-     * Gets the root configuration node for this config file.
-     *
-     * @return the root node
-     */
-    @NotNull
-    SectionNode.RootSectionNode root();
+public interface LecternConfig extends SectionNode.RootSectionNode, Serializable {
 
     /**
      * Saves the configuration to a file.
@@ -59,16 +51,6 @@ public interface LecternConfig extends Serializable {
      * @throws me.machinemaker.lectern.exceptions.ConfigSaveException if there is an error saving the file
      */
     void reloadOrSave();
-
-    /**
-     * Gets a value for an array of node keys.
-     *
-     * @param path keys to lead to a value
-     * @param <T> the value type
-     * @return the value
-     */
-    @Nullable
-    <T> T get(@NotNull String...path);
 
     /**
      * Gets the file associated with this configuration

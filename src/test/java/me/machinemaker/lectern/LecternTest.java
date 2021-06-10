@@ -44,7 +44,7 @@ public class LecternTest {
     @BeforeEach
     void beforeEach() throws IOException {
         Files.deleteIfExists(getFile("config.yml").toPath());
-        config.root()
+        config
                 .addChild("test", true)
                 .addChild("test-list", List.of(1, 3, 5), "List of numbers")
                 .addSection("section1", lecternSectionNode -> {
@@ -64,7 +64,7 @@ public class LecternTest {
     @Test
     void read() throws FileNotFoundException {
         Map<String, ?> map = LecternConfigImpl.LECTERN_YAML.load(new FileInputStream(getFile("read-config.yml")));
-        ((RootSectionNodeImpl) config.root()).load(map);
+        ((RootSectionNodeImpl) ((LecternConfigImpl) config).root()).load(map);
 
         assertFalse(config.<Boolean>get("test"));
         assertEquals("wayBetterValue!", config.get("section1", "key"));

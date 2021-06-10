@@ -23,6 +23,7 @@ import me.machinemaker.lectern.exceptions.ConfigSaveException;
 import me.machinemaker.lectern.yaml.LecternConstructor;
 import me.machinemaker.lectern.yaml.LecternRepresenter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
 import org.yaml.snakeyaml.Yaml;
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 class LecternConfigImpl implements LecternConfig {
 
@@ -63,8 +65,7 @@ class LecternConfigImpl implements LecternConfig {
         this.file = file;
     }
 
-    @Override
-    public @NotNull SectionNode.RootSectionNode root() {
+    RootSectionNode root() {
         return root;
     }
 
@@ -112,5 +113,39 @@ class LecternConfigImpl implements LecternConfig {
     @Override
     public String toString() {
         return this.root.toString();
+    }
+
+    @NotNull
+    @Override
+    public String key() {
+        return root.key();
+    }
+
+    @NotNull
+    @Override
+    public SectionNode parent() {
+        return root.parent();
+    }
+
+    @Nullable
+    @Override
+    public String description() {
+        return null;
+    }
+
+    @NotNull
+    @Override
+    public Map<String, Node> children() {
+        return root.children();
+    }
+
+    @Override
+    public void addChild(@NotNull Node node) {
+        root.addChild(node);
+    }
+
+    @Override
+    public <T> void set(@NotNull T value, @NotNull String... path) {
+        root.set(value, path);
     }
 }

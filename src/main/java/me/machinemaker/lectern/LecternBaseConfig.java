@@ -58,8 +58,8 @@ public abstract class LecternBaseConfig {
         if (this.config == null) {
             throw new ConfigNotInitializedException(getClass());
         }
-        readFields(this, getClass(), config.root());
-        readSubClasses(this, getClass(), config.root());
+        readFields(this, getClass(), config);
+        readSubClasses(this, getClass(), config);
         config.save();
     }
 
@@ -73,8 +73,8 @@ public abstract class LecternBaseConfig {
             throw new ConfigNotInitializedException(getClass());
         }
         config.reload();
-        loadFields(this, getClass(), config.root());
-        loadSubClasses(this, getClass(), config.root());
+        loadFields(this, getClass(), config);
+        loadSubClasses(this, getClass(), config);
     }
 
     /**
@@ -103,8 +103,8 @@ public abstract class LecternBaseConfig {
 
         config = Lectern.createConfig(file, lecternConfig.header().isBlank() ? null : lecternConfig.header());
 
-        loadFields(this, getClass(), config.root());
-        loadSubClasses(this, getClass(), config.root());
+        loadFields(this, getClass(), config);
+        loadSubClasses(this, getClass(), config);
 
         if (file.exists()) {
             this.reload();
