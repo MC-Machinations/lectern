@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -76,7 +77,9 @@ public final class Lectern {
     public static <T extends LecternBaseConfig> T registerConfig(Class<T> configClass, File parentDir) {
         T instance;
         try {
-            instance = configClass.getDeclaredConstructor().newInstance();
+            Constructor<T> constructor = configClass.getDeclaredConstructor();
+            constructor.trySetAccessible();
+            instance = constructor.newInstance();
             instance.init(parentDir);
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException | IOException e) {
             throw new RuntimeException(String.format("Unable to create new instance of %s", configClass.getSimpleName()), e);
