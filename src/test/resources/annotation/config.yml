@@ -1,7 +1,0 @@
-# Comment above testString
-test-string: WAY BETTER STRING
-must-be-number: '1234'
-sub:
-  value1: 3
-  # Boolean comment
-  this-is-a-boolean: false

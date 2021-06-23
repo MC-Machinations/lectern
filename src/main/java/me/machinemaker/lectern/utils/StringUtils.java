@@ -17,6 +17,9 @@
  */
 package me.machinemaker.lectern.utils;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,8 +40,17 @@ public final class StringUtils {
      * @param input text to convert
      * @return converted text
      */
+    @NotNull
     public static String camelCaseToHyphenSnakeCase(String input) {
         Matcher m = LEADING_CAPS.matcher(input);
         return m.replaceAll(match -> "-" + match.group().toLowerCase(Locale.ROOT));
+    }
+
+    @Nullable
+    public static String emptyToNull(@Nullable String string) {
+        if (string == null || string.isBlank()) {
+            return null;
+        }
+        return string;
     }
 }

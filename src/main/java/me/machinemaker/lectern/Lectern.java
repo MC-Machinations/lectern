@@ -51,7 +51,7 @@ public final class Lectern {
      * @return the LecternConfig object
      */
     public static LecternConfig createConfig(File file) {
-        return new LecternConfigImpl(file);
+        return new LecternConfig(file);
     }
 
     /**
@@ -63,7 +63,7 @@ public final class Lectern {
      * @return the LecternConfig object
      */
     public static LecternConfig createConfig(File file, String header) {
-        return new LecternConfigImpl(file, header);
+        return new LecternConfig(file, header);
     }
 
     /**

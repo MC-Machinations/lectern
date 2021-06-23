@@ -29,8 +29,8 @@ dependencies {
 
 indra {
     javaVersions {
-        testWith(11, 16)
-        target(11)
+        testWith(16)
+        target(16)
     }
 
     github("MC-Machinations", "lectern") {
@@ -52,6 +52,10 @@ indra {
             }
         }
     }
+}
+
+license {
+    header(rootProject.file("LICENSE_HEADER"))
 }
 
 tasks {

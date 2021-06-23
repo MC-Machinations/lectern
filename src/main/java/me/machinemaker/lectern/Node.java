@@ -49,6 +49,14 @@ public interface Node {
     @Nullable
     String description();
 
+
+    /**
+     * Sets the description for this node
+     *
+     * @param description the new description
+     */
+    void description(@Nullable String description);
+
     /**
      * Returns a dot-separated string path to this node.
      *

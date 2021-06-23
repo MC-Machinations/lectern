@@ -18,22 +18,42 @@
 package me.machinemaker.lectern;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * A configuration node that holds a value.
  *
  * @param <T> the value type
  */
-public interface ValueNode<T> extends Node {
+public class ValueNode<T> implements Node {
 
-    @Override
-    default boolean isSection() {
-        return false;
+    private final String key;
+    private final SectionNode parent;
+    private T value;
+    private String description;
+
+    ValueNode(String key, SectionNode parent, T value) {
+        this(key, parent, value, null);
+    }
+
+    ValueNode(String key, SectionNode parent, T value, String description) {
+        this.key = key;
+        this.value = value;
+        this.parent = parent;
+        this.description = description != null ? description.isBlank() ? null : description : null;
     }
 
     @Override
-    default boolean isRoot() {
-        return false;
+    public @NotNull String key() {
+        return key;
+    }
+
+    @Override
+    public @NotNull SectionNode parent() {
+        return parent;
     }
 
     /**
@@ -41,12 +61,57 @@ public interface ValueNode<T> extends Node {
      * @return the value
      */
     @NotNull
-    T value();
+    public T value() {
+        return value;
+    }
 
     /**
      * Sets the value of this node.
      *
      * @param value the value to set
      */
-    void value(@NotNull Object value);
+    @SuppressWarnings("unchecked")
+    public void value(@NotNull Object value) {
+        this.value = (T) value;
+    }
+
+    @Override
+    @Nullable
+    public String description() {
+        return description;
+    }
+
+    @Override
+    public void description(@Nullable String description) {
+        this.description = description;
+    }
+
+    @Override
+    public boolean isSection() {
+        return false;
+    }
+
+    @Override
+    public boolean isRoot() {
+        return false;
+    }
+
+    @NotNull
+    String asString(int indent) {
+        String output = LecternConfig.LECTERN_YAML.dump(Map.of(key(), value()));
+        if (description() != null) {
+            output = "# " + description() + "\n" + output;
+        }
+        output = output.lines().map(s -> " ".repeat(indent) + s).collect(Collectors.joining("\n")) + '\n';
+        return output;
+    }
+
+    @Override
+    public String toString() {
+        return "ValueNodeImpl{" +
+                "key='" + key + '\'' +
+                ", value=" + value +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
