@@ -18,6 +18,7 @@
 package me.machinemaker.lectern.object;
 
 import me.machinemaker.lectern.LecternBaseConfig;
+import me.machinemaker.lectern.annotations.Description;
 import me.machinemaker.lectern.annotations.Key;
 import me.machinemaker.lectern.annotations.LecternConfiguration;
 import me.machinemaker.lectern.annotations.LecternConfigurationSection;
@@ -31,6 +32,7 @@ class ObjectConfig extends LecternBaseConfig {
 
 
     @Key("test.number.long")
+    @Description("This is a test long!")
     public long testLong = 1L;
 
     @Key("test.number.int")

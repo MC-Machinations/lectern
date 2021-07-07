@@ -39,6 +39,7 @@ class TestObjectConfig {
     @Test
     void testInitializeConfig() {
         ObjectConfig config = Lectern.registerConfig(ObjectConfig.class, PATH.toFile());
+        System.out.println(config.getConfig());
 
         assertTrue(config.getFile().exists());
     }

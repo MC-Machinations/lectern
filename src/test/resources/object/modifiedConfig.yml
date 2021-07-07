@@ -1,5 +1,6 @@
 test:
   number:
+    # This is a test long!
     long: 1
     int: 5
     double: 30.4

@@ -17,6 +17,7 @@
  */
 package me.machinemaker.lectern;
 
+import me.machinemaker.lectern.annotations.Description;
 import me.machinemaker.lectern.annotations.Key;
 import me.machinemaker.lectern.annotations.LecternConfiguration;
 import me.machinemaker.lectern.annotations.LecternConfigurationSection;
@@ -150,7 +151,11 @@ public abstract class LecternBaseConfig {
             } else {
                 String key = rootNode.path() + (field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName()));
                 try {
-                    rootNode.set(key, field.get(configInstance));
+                    ValueNode<?> valueNode = rootNode.set(key, field.get(configInstance));
+                    if (field.isAnnotationPresent(Description.class)) {
+                        Description fieldDescription = field.getAnnotation(Description.class);
+                        valueNode.description(fieldDescription.value());
+                    }
                 } catch (IllegalAccessException e) {
                     throw new IllegalStateException(String.format("Unable to get value for %s:%s", configClass.getCanonicalName(), field.getName()), e);
                 }

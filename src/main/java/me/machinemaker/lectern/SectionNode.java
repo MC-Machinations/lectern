@@ -208,9 +208,10 @@ public class SectionNode implements Node {
 
     /**
      * Sets a value with an array of node keys.
-     *  @param <T> the value type
+     * @param <T> the value type
      * @param path {@code .}-separated path to lead to a node
      * @param value the value to set
+     * @return the node changed
      */
     @NotNull
     @SuppressWarnings("unchecked")
