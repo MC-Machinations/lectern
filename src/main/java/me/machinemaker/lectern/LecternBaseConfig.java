@@ -48,6 +48,7 @@ public abstract class LecternBaseConfig {
      * Save the configuration file with update values.
      *
      * @throws ConfigNotInitializedException if the config has not been initialized
+     * @throws me.machinemaker.lectern.exceptions.ConfigSaveException if there is an error saving the file
      */
     public void save() {
         if (this.config == null) {
@@ -61,6 +62,7 @@ public abstract class LecternBaseConfig {
      * Overwrites field values with current values in the configuration file.
      *
      * @throws ConfigNotInitializedException if the config has not been initialized
+     * @throws me.machinemaker.lectern.exceptions.ConfigReloadException if there is an error reloading the file (like it doesn't exist)
      */
     public void reload() {
         if (this.config == null) {
@@ -68,6 +70,23 @@ public abstract class LecternBaseConfig {
         }
         this.config.reload();
         loadFields(this, this.config);
+    }
+
+    /**
+     * Reloads the config if the file exists. Saves the config if the file doesn't exist.
+     * Meant for use just after creating the configuration to only
+     * load values from the file if it's been created before.
+     *
+     * @throws ConfigNotInitializedException if the config has not been initialized
+     * @throws me.machinemaker.lectern.exceptions.ConfigReloadException if there is an error reloading the file
+     * @throws me.machinemaker.lectern.exceptions.ConfigSaveException if there is an error saving the file
+     */
+    public void reloadOrSave() {
+        if (this.getFile().exists()) {
+            this.reload();
+        } else {
+            this.save();
+        }
     }
 
     /**

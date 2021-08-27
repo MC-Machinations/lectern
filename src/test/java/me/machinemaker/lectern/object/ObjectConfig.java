@@ -23,7 +23,6 @@ import me.machinemaker.lectern.annotations.Key;
 import me.machinemaker.lectern.annotations.LecternConfiguration;
 import me.machinemaker.lectern.annotations.LecternConfigurationSection;
 
-import java.nio.file.Path;
 import java.util.List;
 
 @LecternConfiguration
