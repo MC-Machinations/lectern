@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -150,7 +151,7 @@ public abstract class LecternBaseConfig {
     }
 
     private static Set<Class<?>> getSubClasses(Class<?> configClass) {
-        return Arrays.stream(configClass.getClasses()).filter(clazz -> clazz.isAnnotationPresent(LecternConfigurationSection.class)).collect(Collectors.toUnmodifiableSet());
+        return Arrays.stream(configClass.getDeclaredClasses()).filter(clazz -> clazz.isAnnotationPresent(LecternConfigurationSection.class)).collect(Collectors.toUnmodifiableSet());
     }
 
     private static void createNodeSchema(Object configInstance, SectionNode rootNode) {
@@ -162,13 +163,15 @@ public abstract class LecternBaseConfig {
                 SectionNode newSubSection = rootNode.addSection(sectionInfo.path(), sectionInfo.description());
                 Object subSectionInstance;
                 try {
-                    subSectionInstance = field.getType().getDeclaredConstructor().newInstance();
+                    Constructor<?> ctor = field.getType().getDeclaredConstructor();
+                    ctor.trySetAccessible();
+                    subSectionInstance = ctor.newInstance();
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new IllegalStateException(String.format("Could not instantiate/set the field to %s", field.getType().getCanonicalName()), e);
                 }
                 createNodeSchema(subSectionInstance, newSubSection);
             } else {
-                String key = rootNode.path() + (field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName()));
+                String key = field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName());
                 try {
                     ValueNode<?> valueNode = rootNode.set(key, field.get(configInstance));
                     if (field.isAnnotationPresent(Description.class)) {
@@ -195,13 +198,16 @@ public abstract class LecternBaseConfig {
                 }
                 Object subSectionInstance;
                 try {
-                    subSectionInstance = field.getType().getDeclaredConstructor().newInstance();
+                    Constructor<?> ctor = field.getType().getDeclaredConstructor();
+                    ctor.trySetAccessible();
+                    subSectionInstance = ctor.newInstance();
+                    field.set(configInstance, subSectionInstance);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new IllegalStateException(String.format("Could not instantiate/set the field to %s", field.getType().getCanonicalName()), e);
                 }
                 loadFields(subSectionInstance, (SectionNode) node);
             } else {
-                String key = rootNode.path() + (field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName()));
+                String key = field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName());
                 Node node = rootNode.getNode(key);
                 if (node == null) {
                     throw new IllegalStateException(key + " doesn't exist on the configuration");
@@ -227,7 +233,13 @@ public abstract class LecternBaseConfig {
                 Object subSectionInstance;
                 try {
                     subSectionInstance = field.get(configInstance);
-                } catch (IllegalAccessException e) {
+                    if (subSectionInstance == null) {
+                        Constructor<?> ctor = field.getType().getDeclaredConstructor();
+                        ctor.trySetAccessible();
+                        subSectionInstance = ctor.newInstance();
+                        field.set(configInstance, subSectionInstance);
+                    }
+                } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
                     throw new IllegalStateException("Could not get the field value for " + configClass.getName() + "." + field.getName());
                 }
                 loadNode(subSectionInstance, (SectionNode) node);
@@ -254,6 +266,17 @@ public abstract class LecternBaseConfig {
                 if (value.getClass() == Integer.class && field.getType() == long.class) {
                     field.set(instance, ((Integer) value).longValue());
                 }
+            }
+            if (field.getType().isEnum()) {
+                for (Object o : field.getType().getEnumConstants()) {
+                    if (o instanceof Enum e) {
+                        if (e.name().equalsIgnoreCase(value.toString())) {
+                            field.set(instance, e);
+                            return;
+                        }
+                    }
+                }
+                throw new IllegalStateException("Couldn't set the value for field: " + field + " value: " + value);
             }
             if (cast) {
                 field.set(instance, field.getType().cast(value));

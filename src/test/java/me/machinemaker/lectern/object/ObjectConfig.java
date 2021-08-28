@@ -28,8 +28,6 @@ import java.util.List;
 @LecternConfiguration
 class ObjectConfig extends LecternBaseConfig {
 
-
-
     @Key("test.number.long")
     @Description("This is a test long!")
     public long testLong = 1L;

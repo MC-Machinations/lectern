@@ -15,16 +15,17 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:20.1.0")
+    compileOnly("org.jetbrains:annotations:22.0.0")
     compileOnly("org.yaml:snakeyaml:1.27")
 
     // jackson
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.4")
 
     // tests
+    testImplementation("commons-io:commons-io:2.11.0")
     testImplementation("org.yaml:snakeyaml:1.27")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
 }
 
 indra {

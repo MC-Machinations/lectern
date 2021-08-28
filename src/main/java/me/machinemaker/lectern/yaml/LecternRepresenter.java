@@ -29,6 +29,7 @@ public class LecternRepresenter extends Representer {
 
     public LecternRepresenter() {
         this.multiRepresenters.put(LecternSerializable.class, new RepresentLecternSerializable());
+        this.multiRepresenters.put(Enum.class, new RepresentEnum());
     }
 
     private class RepresentLecternSerializable extends RepresentMap {
@@ -40,6 +41,15 @@ public class LecternRepresenter extends Representer {
             map.put(LecternSerialization.SERIALIZABLE_KEY, LecternSerialization.getKeyValue(serializable.getClass()));
             map.putAll(serializable.serialize());
             return super.representData(map);
+        }
+    }
+
+    private class RepresentEnum extends RepresentString {
+
+        @Override
+        public Node representData(Object data) {
+            Enum<?> e = (Enum<?>) data;
+            return super.representData(e.name());
         }
     }
 }

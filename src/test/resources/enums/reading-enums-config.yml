@@ -1,0 +1,3 @@
+test-enum: ONE
+section1:
+  test-section-enum: THREE
