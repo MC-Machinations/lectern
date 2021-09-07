@@ -1,0 +1,9 @@
+section1:
+  key1: false
+  key2:
+    - "APPLE"
+    - "ORANGE"
+  key3:
+    - "element1"
+    - "element2"
+key: 32.2
