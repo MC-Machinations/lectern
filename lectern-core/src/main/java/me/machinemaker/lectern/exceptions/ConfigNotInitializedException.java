@@ -17,17 +17,19 @@
  */
 package me.machinemaker.lectern.exceptions;
 
-import java.lang.reflect.Field;
+import me.machinemaker.lectern.BaseConfig;
+
+import java.io.Serial;
 
 /**
- * Exception when the regex validation fails.
- * Catch this to handle regex validation fails in a custom way.
+ * Exception thrown when something regarding a configuration is done before
+ * initialization. {@link #getConfig()} will return null here.
  */
-public class RegexValidationException extends ValidationException {
+public class ConfigNotInitializedException extends ConfigException {
 
-    static final long serialVersionUID = 1L;
+    @Serial private static final long serialVersionUID = 1L;
 
-    public RegexValidationException(String value, String pattern, Class<?> clazz, Field field) {
-        super(String.format("Regex validation error! Pattern: %s ", pattern), value, clazz, field);
+    public ConfigNotInitializedException(Class<? extends BaseConfig> configClass) {
+        super(configClass + " must be initialized");
     }
 }

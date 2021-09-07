@@ -17,7 +17,7 @@
  */
 package me.machinemaker.lectern.exceptions;
 
-import me.machinemaker.lectern.LecternConfig;
+import me.machinemaker.lectern.ConfigurationNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,17 +26,17 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class ConfigException extends RuntimeException {
 
-    static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 2L;
 
-    protected final LecternConfig config;
+    protected final transient ConfigurationNode config;
 
-    protected ConfigException(String message, LecternConfig config, Throwable cause) {
+    protected ConfigException(String message, ConfigurationNode config, Throwable cause) {
         super(message, cause);
         this.config = config;
     }
 
-    protected ConfigException(LecternConfig config, Throwable cause) {
-        super("Exception relating to " + config.getFile(), cause);
+    protected ConfigException(ConfigurationNode config, Throwable cause) {
+        super("Exception relating to " + config.file(), cause);
         this.config = config;
     }
 
@@ -52,7 +52,7 @@ public abstract class ConfigException extends RuntimeException {
      * @return the config
      */
     @Nullable
-    public LecternConfig getConfig() {
+    public ConfigurationNode getConfig() {
         return config;
     }
 }

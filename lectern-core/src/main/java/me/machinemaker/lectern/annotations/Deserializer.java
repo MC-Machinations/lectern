@@ -17,8 +17,6 @@
  */
 package me.machinemaker.lectern.annotations;
 
-import me.machinemaker.lectern.serialization.LecternSerializable;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,7 +24,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotate a static method/constructor inside
- * classes that implement {@link LecternSerializable}
+ * classes that implement
  */
 @Target({ElementType.METHOD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)

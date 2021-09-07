@@ -15,18 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package me.machinemaker.lectern.exceptions;
+package me.machinemaker.lectern.annotations;
 
-import me.machinemaker.lectern.LecternConfig;
+import me.machinemaker.lectern.validations.ValueValidator;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Exception when a config reload fails.
+ * Provide validators for a field
  */
-public class ConfigReloadException extends ConfigException {
+@Documented
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Validate {
 
-    static final long serialVersionUID = 1L;
-
-    public ConfigReloadException(LecternConfig config, Throwable cause) {
-        super("Error reloading " + config.getFile(), config, cause);
-    }
+    Class<? extends ValueValidator<?>>[] validators();
 }

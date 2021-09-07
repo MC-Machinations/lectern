@@ -17,33 +17,32 @@
  */
 package me.machinemaker.lectern.annotations;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Defines a configuration section.
- * For use inside types that extend {@link me.machinemaker.lectern.LecternBaseConfig}
- * and are annotated with {@link LecternConfiguration}.
+ * For use on types that extend {@link me.machinemaker.lectern.BaseConfig}.
+ * Defines a type that represents a configuration file.
  */
+@Inherited
 @Documented
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LecternConfigurationSection {
+public @interface Configuration {
 
     /**
-     * The path to this configuration section.
-     * @return the path
+     * The filename for this configuration.
+     * @return the filename
      */
-    @NotNull String path();
+    String fileName() default "config.yml";
 
     /**
-     * The description of this section.
-     * @return the description
+     * The header for the file.
+     * @return the header
      */
-    String description() default "";
+    String header() default "";
 }

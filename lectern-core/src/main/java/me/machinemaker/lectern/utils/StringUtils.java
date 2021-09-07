@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  */
 public final class StringUtils {
 
-    private static final Pattern LEADING_CAPS = Pattern.compile("(?<=[a-z])[A-Z]");
+    static final Pattern LEADING_CAPS = Pattern.compile("(?<=[a-z])[A-Z]");
 
     private StringUtils() {
     }
@@ -46,6 +46,12 @@ public final class StringUtils {
         return m.replaceAll(match -> "-" + match.group().toLowerCase(Locale.ROOT));
     }
 
+    /**
+     * Convert a blank/empty string to null.
+     *
+     * @param string string input
+     * @return string output or null if blank/empty
+     */
     @Nullable
     public static String emptyToNull(@Nullable String string) {
         if (string == null || string.isBlank()) {

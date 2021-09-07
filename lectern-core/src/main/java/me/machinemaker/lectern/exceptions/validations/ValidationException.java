@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package me.machinemaker.lectern.exceptions;
+package me.machinemaker.lectern.exceptions.validations;
 
 import java.lang.reflect.Field;
 
@@ -28,9 +28,9 @@ public abstract class ValidationException extends RuntimeException {
 
     private final String value;
     private final Class<?> clazz;
-    private final Field field;
+    private final transient Field field;
 
-    public ValidationException(String message, String value, Class<?> clazz, Field field) {
+    protected ValidationException(String message, String value, Class<?> clazz, Field field) {
         super(message + String.format(" Value: %s Class: %s Field %s", value, clazz, field));
         this.value = value;
         this.clazz = clazz;

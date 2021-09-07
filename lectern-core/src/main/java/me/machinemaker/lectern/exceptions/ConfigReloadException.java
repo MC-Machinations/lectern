@@ -17,16 +17,16 @@
  */
 package me.machinemaker.lectern.exceptions;
 
-import me.machinemaker.lectern.LecternConfig;
+import me.machinemaker.lectern.ConfigurationNode;
 
 /**
- * Exception when a config save fails.
+ * Exception when a config reload fails.
  */
-public class ConfigSaveException extends ConfigException {
+public class ConfigReloadException extends ConfigException {
 
     static final long serialVersionUID = 1L;
 
-    public ConfigSaveException(LecternConfig config, Throwable cause) {
-        super("Unable to save " + config.getFile(), config, cause);
+    public ConfigReloadException(ConfigurationNode config, Throwable cause) {
+        super("Error reloading " + config.file(), config, cause);
     }
 }

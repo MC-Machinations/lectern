@@ -15,28 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package me.machinemaker.lectern.annotations;
+package me.machinemaker.lectern.exceptions;
 
-import org.intellij.lang.annotations.RegExp;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import me.machinemaker.lectern.ConfigurationNode;
 
 /**
- * Validation options for a type field.
+ * Exception when a config save fails.
  */
-@Documented
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Validate {
+public class ConfigSaveException extends ConfigException {
 
-    /**
-     * Regular expression to validate the value.
-     *
-     * @return the regular expression
-     */
-    @RegExp String regex();
+    static final long serialVersionUID = 1L;
+
+    public ConfigSaveException(ConfigurationNode config, Throwable cause) {
+        super("Unable to save " + config.file(), config, cause);
+    }
 }

@@ -15,19 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package me.machinemaker.lectern.exceptions;
+package me.machinemaker.lectern.exceptions.validations;
 
-import me.machinemaker.lectern.LecternBaseConfig;
+import java.lang.reflect.Field;
 
 /**
- * Exception thrown when something regarding a configuration is done before
- * initialization. {@link #getConfig()} will return null here.
+ * Exception when the regex validation fails.
+ * Catch this to handle regex validation fails in a custom way.
  */
-public class ConfigNotInitializedException extends ConfigException {
+public class RegexValidationException extends ValidationException {
 
-    private static final long serialVersionUID = 1L;
+    static final long serialVersionUID = 1L;
 
-    public ConfigNotInitializedException(Class<? extends LecternBaseConfig> configClass) {
-        super(configClass + " must be initialized");
+    public RegexValidationException(String value, String pattern, Class<?> clazz, Field field) {
+        super(String.format("Regex validation error! Pattern: %s ", pattern), value, clazz, field);
     }
 }
