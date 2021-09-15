@@ -19,7 +19,6 @@
  */
 package me.machinemaker.lectern;
 
-import com.fasterxml.jackson.databind.JavaType;
 import me.machinemaker.lectern.annotations.Configuration;
 import me.machinemaker.lectern.collection.ConfigField;
 import me.machinemaker.lectern.collection.FieldCollector;
@@ -32,13 +31,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public abstract class BaseConfig implements Reloadable {
 
@@ -92,7 +89,7 @@ public abstract class BaseConfig implements Reloadable {
         createDefaultSectionNodeSchema(this, this.rootNode);
 
         if (Files.exists(this.file)) {
-            this.reload();
+            this.reloadAndSave();
         } else {
             loadConfigTree(this, this.rootNode);
             try {
