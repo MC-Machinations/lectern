@@ -22,9 +22,11 @@ package me.machinemaker.lectern;
 import me.machinemaker.lectern.annotations.Configuration;
 import me.machinemaker.lectern.collection.ConfigField;
 import me.machinemaker.lectern.collection.FieldCollector;
+import me.machinemaker.lectern.exceptions.ConfigAlreadyInitializedException;
 import me.machinemaker.lectern.exceptions.ConfigNotInitializedException;
 import me.machinemaker.lectern.supplier.ConfigurationSupplier;
 import me.machinemaker.lectern.validations.ValueValidator;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +74,11 @@ public abstract class BaseConfig implements Reloadable {
         loadFields(this, this.rootNode);
     }
 
-    final void init(Path parentDir) {
+    @MustBeInvokedByOverriders
+    public void init(Path parentDir) {
+        if (this.rootNode != null) {
+            throw new ConfigAlreadyInitializedException(this.rootNode);
+        }
         Annotation configurationAnnotation = null;
         for (Annotation annotation : getClass().getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(Configuration.class)) {
