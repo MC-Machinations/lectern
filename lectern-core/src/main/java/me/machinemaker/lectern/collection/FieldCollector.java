@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import me.machinemaker.lectern.annotations.ConfigurationSection;
 import me.machinemaker.lectern.annotations.Description;
 import me.machinemaker.lectern.annotations.Key;
+import me.machinemaker.lectern.annotations.Meta;
 import me.machinemaker.lectern.annotations.validations.Validation;
 import me.machinemaker.lectern.utils.StringUtils;
 import me.machinemaker.lectern.validations.FieldValueValidator;
@@ -34,8 +35,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public final class FieldCollector {
@@ -58,12 +61,18 @@ public final class FieldCollector {
             field.trySetAccessible();
             String key;
             String description;
+            Map<String, Object> meta = new HashMap<>();
+            for (Annotation annotation : field.getAnnotations()) {
+                if (annotation.annotationType().isAnnotationPresent(Meta.class)) {
+                    meta.put(annotation.annotationType().getAnnotation(Meta.class).value(), annotation);
+                }
+            }
             if (this.subClasses.contains(field.getType())) {
                 if (!field.getType().isAnnotationPresent(ConfigurationSection.class)) {
                     throw new IllegalStateException("Configuration sections must be annotated with " + ConfigurationSection.class.getName());
                 }
                 ConfigurationSection section = field.getType().getAnnotation(ConfigurationSection.class);
-                configFields.add(new ConfigField.Section(field, section.description(), section.path(), field.getType()));
+                configFields.add(new ConfigField.Section(field, section.description(), section.path(), field.getType(), meta));
             } else {
                 key = field.isAnnotationPresent(Key.class) ? field.getAnnotation(Key.class).value() : StringUtils.camelCaseToHyphenSnakeCase(field.getName());
                 description = field.isAnnotationPresent(Description.class) ? field.getAnnotation(Description.class).value() : null;
@@ -86,7 +95,8 @@ public final class FieldCollector {
                         description,
                         key,
                         TypeFactory.defaultInstance().constructType(field.getGenericType()),
-                        validators));
+                        validators,
+                        meta));
             }
         }
         return Collections.unmodifiableList(configFields);

@@ -29,17 +29,20 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public abstract class ConfigField {
 
     private final Field field;
     private final String description;
     private final String key;
+    private final Map<String, Object> meta;
 
-    protected ConfigField(@NotNull Field field, @Nullable String description, @NotNull String key) {
+    protected ConfigField(@NotNull Field field, @Nullable String description, @NotNull String key, @NotNull Map<String, Object> meta) {
         this.field = field;
         this.description = description;
         this.key = key;
+        this.meta = meta;
     }
 
     public @Nullable Object get(@NotNull Object configInstance) {
@@ -72,12 +75,16 @@ public abstract class ConfigField {
         return key;
     }
 
+    public @NotNull Map<String, Object> meta() {
+        return this.meta;
+    }
+
     public static class Section extends ConfigField {
 
         private final Class<?> sectionType;
 
-        public Section(@NotNull Field field, @Nullable String description, @NotNull String key, @NotNull Class<?> sectionType) {
-            super(field, description, key);
+        public Section(@NotNull Field field, @Nullable String description, @NotNull String key, @NotNull Class<?> sectionType, @NotNull Map<String, Object> meta) {
+            super(field, description, key, meta);
             this.sectionType = sectionType;
         }
 
@@ -106,8 +113,8 @@ public abstract class ConfigField {
         private final JavaType type;
         private final List<ValueValidator<?>> validators;
 
-        public Value(@NotNull Field field, @Nullable String description, @NotNull String key, @NotNull JavaType type, List<ValueValidator<?>> validators) {
-            super(field, description, key);
+        public Value(@NotNull Field field, @Nullable String description, @NotNull String key, @NotNull JavaType type, List<ValueValidator<?>> validators, @NotNull Map<String, Object> meta) {
+            super(field, description, key, meta);
             this.type = type;
             this.validators = Collections.unmodifiableList(validators);
         }

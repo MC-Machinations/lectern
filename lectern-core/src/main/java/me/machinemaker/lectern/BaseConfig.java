@@ -120,29 +120,33 @@ public abstract class BaseConfig implements Reloadable {
         }
     }
 
-    private static void createDefaultSectionNodeSchema(Object configInstance, SectionNode sectionNode) {
+    protected void createDefaultSectionNodeSchema(Object configInstance, SectionNode sectionNode) {
         sectionNode.clear();
         final FieldCollector collector = new FieldCollector(configInstance.getClass());
         for (ConfigField configField : collector.collectFields()) {
             if (configField instanceof ConfigField.Section section) {
                 SectionNode newSection = sectionNode.addSection(section.key(), section.description());
+                newSection.meta().putAll(section.meta());
                 createDefaultSectionNodeSchema(section.getOrCreateInstance(), newSection);
             } else if (configField instanceof ConfigField.Value value) {
-                setupNodeSchema(sectionNode, value, value.get(configInstance), configInstance);
+                setupValueNodeSchema(sectionNode, value, value.get(configInstance), configInstance);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> void setupNodeSchema(SectionNode sectionNode, ConfigField.Value field, T value, Object configInstance) {
+    @MustBeInvokedByOverriders
+    protected <T> ValueNode<T> setupValueNodeSchema(SectionNode sectionNode, ConfigField.Value field, T value, Object configInstance) {
         ValueNode<T> valueNode = sectionNode.set(field.key(), field.type(), value);
         valueNode.callback = val -> field.set(configInstance, val);
         valueNode.description(field.description());
+        valueNode.meta().putAll(field.meta());
         List<ValueValidator<T>> valueValidators = new ArrayList<>();
         for (ValueValidator<?> validator : field.validators()) {
             valueValidators.add((ValueValidator<T>) validator);
         }
         valueNode.validators(valueValidators);
+        return valueNode;
     }
 
     private static void loadFields(Object configInstance, SectionNode sectionNode) {

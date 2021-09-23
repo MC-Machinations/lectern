@@ -24,11 +24,15 @@ import me.machinemaker.lectern.contexts.SerializeContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class Node {
 
     protected final String key;
     protected final SectionNode parent;
     protected String description;
+    protected final Map<String, Object> meta = new HashMap<>();
 
     protected Node(@NotNull String key, @Nullable SectionNode parent) {
         this(key, parent, null);
@@ -54,6 +58,10 @@ public abstract class Node {
 
     public void description(@Nullable String description) {
         this.description = description;
+    }
+
+    public @NotNull Map<String, Object> meta() {
+        return this.meta;
     }
 
     /**
