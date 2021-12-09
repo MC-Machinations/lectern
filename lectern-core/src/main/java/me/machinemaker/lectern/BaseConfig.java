@@ -50,35 +50,42 @@ public abstract class BaseConfig implements Reloadable {
     }
 
     public @NotNull ConfigurationNode rootNode() {
-        if (this.rootNode == null) {
-            throw new ConfigNotInitializedException(this.getClass());
-        }
+        this.checkInit();
         return this.rootNode;
     }
 
     @Override
     public void save() {
-        if (this.rootNode == null) {
-            throw new ConfigNotInitializedException(this.getClass());
-        }
+        this.checkInit();
         loadConfigTree(this, this.rootNode);
         this.rootNode.save();
     }
 
     @Override
     public void reload() {
-        if (this.rootNode == null) {
-            throw new ConfigNotInitializedException(this.getClass());
-        }
+        this.checkInit();
         this.rootNode.reload();
         loadFields(this, this.rootNode);
     }
 
-    @MustBeInvokedByOverriders
-    public void init(Path parentDir) {
-        if (this.rootNode != null) {
-            throw new ConfigAlreadyInitializedException(this.rootNode);
+    @Override
+    public @NotNull Path checkInit() {
+        if (this.rootNode == null) {
+            throw new ConfigNotInitializedException(this.getClass());
         }
+        return Reloadable.super.checkInit();
+    }
+
+    /**
+     * Checks if this configuration is initialized.
+     *
+     * @return true if initialized
+     */
+    public boolean isInitialized() {
+        return this.rootNode != null;
+    }
+
+    protected @NotNull Annotation getConfigurationAnnotation() {
         Annotation configurationAnnotation = null;
         for (Annotation annotation : getClass().getAnnotations()) {
             if (annotation.annotationType().isAnnotationPresent(Configuration.class)) {
@@ -89,13 +96,39 @@ public abstract class BaseConfig implements Reloadable {
         if (configurationAnnotation == null) {
             throw new IllegalStateException(String.format("%s is missing an annotation annotated with the %s annotation!", getClass().getSimpleName(), Configuration.class.getSimpleName()));
         }
+        return configurationAnnotation;
+    }
 
+    public void createInitialFile(Path parentDir) {
+        this.init(parentDir, true);
+    }
+
+    /**
+     * Initializes the configuration. Should only be
+     * called once.
+     *
+     * @param parentDir the parent directory of the config file
+     */
+    @MustBeInvokedByOverriders
+    public void init(Path parentDir) {
+        this.init(parentDir, false);
+    }
+
+    public final void init(Path parentDir, boolean justCreate) {
+        if (this.rootNode != null) {
+            throw new ConfigAlreadyInitializedException(this.rootNode);
+        }
+        final Annotation configurationAnnotation = this.getConfigurationAnnotation();
         createRootNode(parentDir, configurationAnnotation, configurationAnnotation.annotationType().getAnnotation(Configuration.class).supplier());
-
         createDefaultSectionNodeSchema(this, this.rootNode);
+        this.handleFile(justCreate);
+    }
 
-        if (Files.exists(this.file)) {
+    protected void handleFile(boolean justCreate) {
+        if (!justCreate && Files.exists(this.file)) {
             this.reloadAndSave();
+        } else if (justCreate && Files.exists(this.file)) {
+            throw new IllegalArgumentException("Cannot use the justCreate if the file is already created");
         } else {
             loadConfigTree(this, this.rootNode);
             try {
@@ -232,12 +265,31 @@ public abstract class BaseConfig implements Reloadable {
      * @return the new instance
      */
     public static <C extends BaseConfig> C create(@NotNull Class<C> configClass, @NotNull Path parentDir) {
+        final C configInstance = BaseConfig.createInstance(configClass);
+        configInstance.init(parentDir);
+        return configInstance;
+    }
+
+    /**
+     * Instantiates a new Configuration class. Useful for only creating the initial
+     * configuration file.
+     *
+     * @param configClass the class to instantiate a new instance of
+     * @param parentDir the parent directory for the file for this config
+     * @return the new instance
+     * @throws IllegalArgumentException if the file already exists for this config
+     */
+    public static <C extends BaseConfig> C createInitialFile(@NotNull Class<C> configClass, @NotNull Path parentDir) {
+        final C configInstance = BaseConfig.createInstance(configClass);
+        configInstance.createInitialFile(parentDir);
+        return configInstance;
+    }
+
+    private static <C extends BaseConfig> C createInstance(@NotNull Class<C> configClass) {
         try {
-            var ctor = configClass.getDeclaredConstructor();
+            Constructor<C> ctor = configClass.getDeclaredConstructor();
             ctor.trySetAccessible();
-            C instance = ctor.newInstance();
-            instance.init(parentDir);
-            return instance;
+            return ctor.newInstance();
         } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException(String.format("Unable to create a new instance of %s", configClass.getSimpleName()), e);
         }

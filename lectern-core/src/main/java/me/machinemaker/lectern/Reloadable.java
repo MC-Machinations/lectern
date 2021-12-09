@@ -20,6 +20,8 @@
 package me.machinemaker.lectern;
 
 import me.machinemaker.lectern.exceptions.ConfigNotInitializedException;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Files;
@@ -36,6 +38,7 @@ public interface Reloadable {
      *
      * @return the file
      */
+    @Contract(pure = true)
     @Nullable Path file();
 
     /**
@@ -53,10 +56,7 @@ public interface Reloadable {
      * @see #reloadAndSave()
      */
     default void reloadOrSave() {
-        final Path file = this.file();
-        if (file == null) {
-            throw new ConfigNotInitializedException(this.getClass());
-        }
+        final Path file = this.checkInit();
         if (Files.exists(file)) {
             this.reload();
         } else {
@@ -70,13 +70,22 @@ public interface Reloadable {
      * @see #reloadOrSave()
      */
     default void reloadAndSave() {
-        final Path file = this.file();
-        if (file == null) {
-            throw new ConfigNotInitializedException(this.getClass());
-        }
+        final Path file = this.checkInit();
         if (Files.exists(file)) {
             this.reload();
         }
         this.save();
+    }
+
+    /**
+     * Checks if this configuration has been initialized.
+     *
+     * @throws ConfigNotInitializedException if the config hasn't been initialized
+     */
+    default @NotNull Path checkInit() {
+        if (this.file() == null) {
+            throw new ConfigNotInitializedException(this.getClass());
+        }
+        return this.file();
     }
 }
